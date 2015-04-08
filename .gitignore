@@ -8,3 +8,4 @@ Makefile
 # folders
 .settings/
 target/
+test-output/
