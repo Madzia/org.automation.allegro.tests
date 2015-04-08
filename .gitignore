@@ -1,0 +1,10 @@
+# auto created files
+.classpath
+*.*~    
+*~    
+.project
+Makefile
+
+# folders
+.settings/
+target/
