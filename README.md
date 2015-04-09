@@ -20,7 +20,7 @@ cd org.automation.allegro.tests
 2. Enter 'smartwatch' into search field.
 3. Click the magnifier button.
 4. search results sorted by 'cena: od najwyższej'.
-5. Click at first auction in list.
+5. Click first auction on the list.
 6. In item website verify that price is bigger than 1000 zł.
 7. Open 'Dostawa i płatność'.
 8. Download and write into log available supply options.
