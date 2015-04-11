@@ -4,6 +4,8 @@
 *~    
 .project
 Makefile
+chromedriver
+
 
 # folders
 .settings/

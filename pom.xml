@@ -8,12 +8,16 @@
     <artifactId>automation_smartwatch_supply_checker</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
     <dependencies>
-        <dependency>
+	<dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>6.8.21</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -21,4 +25,6 @@
             <version>2.45.0</version>
         </dependency>
     </dependencies>
+
 </project>
+

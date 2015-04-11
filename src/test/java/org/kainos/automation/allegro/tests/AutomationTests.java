@@ -3,8 +3,6 @@
 // File name:   AutomationTests.java
 // Created:     10/04/2015 by Magdalena Sarzyńska <magda2609@gmail.com>.
 // Description:
-
-
 package org.kainos.automation.allegro.tests;
 
 import java.util.concurrent.TimeUnit;
@@ -24,11 +22,18 @@ import org.testng.annotations.Test;
 
 public class AutomationTests {
 
-	private WebDriver driver;
+	private WebDriver driver;	
+	private WebElement sortPicklist;
+	private WebElement sortHighest;
 	private String websiteUrl = new String("http://www.allegro.pl");
 	private String searchedPhrase = new String("smartwatch");
-	private int waitingPeriodInSeconds = new Integer(5);
-
+	private String reporterOutput;
+	private String findingSentence;
+	private int waitingPeriodInSeconds = new Integer(5);	
+	private int numberOfInstances = new Integer(0);	
+	private WebDriverWait wait;
+	
+	
 	@BeforeClass(alwaysRun = true)
 	public void setUp() {
 		driver = new FirefoxDriver();
@@ -58,8 +63,8 @@ public class AutomationTests {
 		driver.findElement(By.xpath("//input[@class='sprite search-btn']")).click();
 		
 		//Locate the web elements
-		WebElement sortPicklist = driver.findElement(By.xpath("//div[@class='listing-sort-dropdown']/descendant::span[@class='arrow']"));
-        WebElement sortHighest = driver.findElement(By.xpath("//dd[2]/child::a[1]"));
+		sortPicklist = driver.findElement(By.xpath("//div[@class='listing-sort-dropdown']/descendant::span[@class='arrow']"));
+        sortHighest = driver.findElement(By.xpath("//dd[2]/child::a[1]"));
 		
         //Select "cena: od najwyższej"
 		new Actions(driver).click(sortPicklist)
@@ -67,9 +72,9 @@ public class AutomationTests {
 		.perform();
 		
 		//wait until web page will be sorted = dropdown list won't be active
-		String findingSentence = new String("//div[@class='listing-sort-dropdown active']");
-		WebDriverWait wait = new WebDriverWait(driver, waitingPeriodInSeconds);	
-		int numberOfInstances = new Integer(0);		
+		findingSentence = new String("//div[@class='listing-sort-dropdown active']");
+		numberOfInstances = new Integer(0);		
+		wait = new WebDriverWait(driver, waitingPeriodInSeconds);
 		waitingClass(findingSentence, wait, numberOfInstances);
 		
 		//Click first auction
@@ -87,9 +92,19 @@ public class AutomationTests {
 		//click on "Dostawa i płatność"
 		driver.findElement(By.xpath("//a[@class='siTabs' and @href='#delivery']")).click();
         
-		//Download and write into log available supply options.
-
+		//Download and write into log available supply options. Output in index.html -> Reporter output.
+											//first title
+		reporterOutput = new String("<h3>"+driver.findElement(By.xpath("//div[@class='bannerContainer']/following-sibling::h5")).getText()+"</h3>"
+				//first table
+				+"<table>"+driver.findElement(By.xpath("//input[@id='prepareTime']/following-sibling::table[1]")).getAttribute("innerHTML")+"</table>"
+				//second title
+				+"<h3>"+driver.findElement(By.xpath("//div[@class='deliveryAndPayment']/following-sibling::h5")).getText()+"</h3>"
+				//second table
+				+driver.findElement(By.xpath("//div[@class='deliveryAndPayment'][2]")).getAttribute("innerHTML"));
+		//add horizontal lines into tables
+		reporterOutput = new String(reporterOutput.replaceAll("<table>", "<table frame=\"void\" rules=\"rows\">"));
 		
+		Reporter.log(reporterOutput);
 	}
 
 	///Method will find all elements that contains elementXpath, will count them and compare with numberOfInstances.
@@ -101,8 +116,5 @@ public class AutomationTests {
 	        }
 	    };
 	    wait.until(conditionToCheck);
-	}
-		
+	}		
 }
-
-
