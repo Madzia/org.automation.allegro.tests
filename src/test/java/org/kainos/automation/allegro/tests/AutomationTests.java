@@ -29,16 +29,31 @@ public class AutomationTests {
 	private WebElement sortPicklist;
 	private WebElement sortHighest;
 	private List<WebElement> allSupplyOptionsInTable;
-	private String websiteUrl = new String("http://www.allegro.pl");
-	private String searchedPhrase = new String("smartwatch");
-	private String findingSentence;
-	private String output;
-	private String xPathInputTd;
-	private int waitingPeriodInSeconds = new Integer(5);	
-	private int numberOfInstances = new Integer(0);	
 	private WebDriverWait wait;
-	
-	
+	private String output;
+	private String websiteUrl = "http://www.allegro.pl";
+	private String searchedPhrase = "smartwatch";
+	private String searchFieldId = "main-search-text";
+	private String searchButtonId = "//input[@class='sprite search-btn']";
+	private String sortDropDownListArrowId = "//div[@class='listing-sort-dropdown']/descendant::span[@class='arrow']";
+	private String elementOnDropDownListId = "//dd[2]/child::a[1]";
+	private String firstAuctionElementId = "//article[1]/descendant::a[1]";
+	private String findingFirstSentenceForWait = "//div[@class='listing-sort-dropdown active']";
+	private String findingSecondtSentenceForWait = "//div[@id='paymentShipment']";
+	private String priceValueId = "priceValue";
+	private String priceValueAttributeId = "data-price";
+	private String deliveryId = "//a[@class='siTabs' and @href='#delivery']";
+	private String xPathInputTd = "//div[@class='deliveryAndPayment']/descendant::tr[td]/child::td[1]";
+	private String outputBegin = "<div class=\"suite-section-content\"><ul>";
+	private String ilBegin  = "<li>";
+	private String ilEnd = "</li>";
+	private String outputEnd = "</ul></div>";
+	private int waitingPeriodInSeconds = 5;	
+	private int numberOfInstancesFirstSentenceForWait = 0;	
+	private int numberOfInstancesSecondSentenceForWait = 1;	
+	//in data-price value is multiplied times 100, so it's faster also multiply 1000 times 100
+	//and compare that values
+	private int priceValueMultiply100 = 100000;
 	
 	@BeforeClass(alwaysRun = true)
 	public void setUp() {
@@ -63,14 +78,14 @@ public class AutomationTests {
 	public void testSupplyOptionsForMostExpensiveSmartwatch(){
 		
 		//Enter into text field searched phrase
-		driver.findElement(By.id("main-search-text")).sendKeys(searchedPhrase);
+		driver.findElement(By.id(searchFieldId)).sendKeys(searchedPhrase);
 		
 		//Click the magnifier button
-		driver.findElement(By.xpath("//input[@class='sprite search-btn']")).click();
+		driver.findElement(By.xpath(searchButtonId)).click();
 		
 		//Locate the web elements
-		sortPicklist = driver.findElement(By.xpath("//div[@class='listing-sort-dropdown']/descendant::span[@class='arrow']"));
-		sortHighest = driver.findElement(By.xpath("//dd[2]/child::a[1]"));
+		sortPicklist = driver.findElement(By.xpath(sortDropDownListArrowId));
+		sortHighest = driver.findElement(By.xpath(elementOnDropDownListId));
 		
 		//Select "cena: od najwyższej"
 		new Actions(driver).click(sortPicklist)
@@ -78,28 +93,22 @@ public class AutomationTests {
 		.perform();
 		
 		//wait until web page will be sorted = dropdown list won't be active
-		findingSentence = new String("//div[@class='listing-sort-dropdown active']");
-		numberOfInstances = new Integer(0);		
 		wait = new WebDriverWait(driver, waitingPeriodInSeconds);
-		waitingClass(findingSentence, wait, numberOfInstances);
+		waitingClass(findingFirstSentenceForWait, wait, numberOfInstancesFirstSentenceForWait);
 		
 		//Click first auction
-		driver.findElement(By.xpath("//article[1]/descendant::a[1]")).click();
+		driver.findElement(By.xpath(firstAuctionElementId)).click();
 		
 		//wait until web page will be loaded = payment panel exists
-		findingSentence = new String("//div[@id='paymentShipment']");
-		numberOfInstances = new Integer(1);
-		waitingClass(findingSentence, wait, numberOfInstances);
+		waitingClass(findingSecondtSentenceForWait, wait, numberOfInstancesSecondSentenceForWait);
 		
-		//test for price > 1000 zł (in data-price value is multiplied times 100, so it's faster also multiply 1000 times 100
-		//and compare that values
-		assert (Integer.parseInt(driver.findElement(By.id("priceValue")).getAttribute("data-price"))>100000 ? true : false);
+		//test for price > 1000 zł
+		assert (Integer.parseInt(driver.findElement(By.id(priceValueId)).getAttribute(priceValueAttributeId))>priceValueMultiply100 ? true : false);
 		
 		//click on "Dostawa i płatność"
-		driver.findElement(By.xpath("//a[@class='siTabs' and @href='#delivery']")).click();
+		driver.findElement(By.xpath(deliveryId)).click();
         
 		//Download and write into log available supply options. Output in index.html -> Reporter output.
-		xPathInputTd = new String("//div[@class='deliveryAndPayment']/descendant::tr[td]/child::td[1]");
 		Reporter.log(returnSupplyOptionsFromXpathInput(xPathInputTd));
 	}
 
@@ -117,9 +126,9 @@ public class AutomationTests {
 	///Function load all WebElements agreed with xPathInput each one add to unordered output list 
 	private String returnSupplyOptionsFromXpathInput(String xPathInput) {
 		allSupplyOptionsInTable = driver.findElements(By.xpath(xPathInput));
-		output = new String("<div class=\"suite-section-content\"><ul>");
+		output = outputBegin;
 		for (WebElement item : allSupplyOptionsInTable)
-			output = new String(output+"<li>"+item.getText()+"</li>");
-		return output+"</ul></div>";
+			output = new String(output+ilBegin+item.getText()+ilEnd);
+		return output+outputEnd;
 	}
 }
