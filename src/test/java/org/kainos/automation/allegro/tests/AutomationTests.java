@@ -64,9 +64,9 @@ public class AutomationTests {
 		
 		//Locate the web elements
 		sortPicklist = driver.findElement(By.xpath("//div[@class='listing-sort-dropdown']/descendant::span[@class='arrow']"));
-        sortHighest = driver.findElement(By.xpath("//dd[2]/child::a[1]"));
+		sortHighest = driver.findElement(By.xpath("//dd[2]/child::a[1]"));
 		
-        //Select "cena: od najwyższej"
+		//Select "cena: od najwyższej"
 		new Actions(driver).click(sortPicklist)
 		.click(sortHighest)
 		.perform();

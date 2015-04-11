@@ -25,6 +25,10 @@ cd org.automation.allegro.tests
 7. Open 'Dostawa i płatność'.
 8. Download and write into log available supply options.
 
+##Example tests output
+
+https://test-output-example.herokuapp.com/
+
 ##Requirements
 
 * Eclipse IDE (or another one, preferred version is Luna Service Release 2 (4.4.2) or newer). 
