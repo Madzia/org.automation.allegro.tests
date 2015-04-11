@@ -2,9 +2,12 @@
 //
 // File name:   AutomationTests.java
 // Created:     10/04/2015 by Magdalena Sarzyńska <magda2609@gmail.com>.
-// Description:
+// Description: Test for download and write into log available supply options 
+// from www.allegro.pl website most expensive watch.
+
 package org.kainos.automation.allegro.tests;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -25,13 +28,16 @@ public class AutomationTests {
 	private WebDriver driver;	
 	private WebElement sortPicklist;
 	private WebElement sortHighest;
+	private List<WebElement> allSupplyOptionsInTable;
 	private String websiteUrl = new String("http://www.allegro.pl");
 	private String searchedPhrase = new String("smartwatch");
-	private String reporterOutput;
 	private String findingSentence;
+	private String output;
+	private String xPathInputTd;
 	private int waitingPeriodInSeconds = new Integer(5);	
 	private int numberOfInstances = new Integer(0);	
 	private WebDriverWait wait;
+	
 	
 	
 	@BeforeClass(alwaysRun = true)
@@ -93,18 +99,8 @@ public class AutomationTests {
 		driver.findElement(By.xpath("//a[@class='siTabs' and @href='#delivery']")).click();
         
 		//Download and write into log available supply options. Output in index.html -> Reporter output.
-											//first title
-		reporterOutput = new String("<h3>"+driver.findElement(By.xpath("//div[@class='bannerContainer']/following-sibling::h5")).getText()+"</h3>"
-				//first table
-				+"<table>"+driver.findElement(By.xpath("//input[@id='prepareTime']/following-sibling::table[1]")).getAttribute("innerHTML")+"</table>"
-				//second title
-				+"<h3>"+driver.findElement(By.xpath("//div[@class='deliveryAndPayment']/following-sibling::h5")).getText()+"</h3>"
-				//second table
-				+driver.findElement(By.xpath("//div[@class='deliveryAndPayment'][2]")).getAttribute("innerHTML"));
-		//add horizontal lines into tables
-		reporterOutput = new String(reporterOutput.replaceAll("<table>", "<table frame=\"void\" rules=\"rows\">"));
-		
-		Reporter.log(reporterOutput);
+		xPathInputTd = new String("//div[@class='deliveryAndPayment']/descendant::tr[td]/child::td[1]");
+		Reporter.log(returnSupplyOptionsFromXpathInput(xPathInputTd));
 	}
 
 	///Method will find all elements that contains elementXpath, will count them and compare with numberOfInstances.
@@ -116,5 +112,14 @@ public class AutomationTests {
 	        }
 	    };
 	    wait.until(conditionToCheck);
-	}		
+	}	
+	
+	///Function load all WebElements agreed with xPathInput each one add to unordered output list 
+	private String returnSupplyOptionsFromXpathInput(String xPathInput) {
+		allSupplyOptionsInTable = driver.findElements(By.xpath(xPathInput));
+		output = new String("<div class=\"suite-section-content\"><ul>");
+		for (WebElement item : allSupplyOptionsInTable)
+			output = new String(output+"<li>"+item.getText()+"</li>");
+		return output+"</ul></div>";
+	}
 }
